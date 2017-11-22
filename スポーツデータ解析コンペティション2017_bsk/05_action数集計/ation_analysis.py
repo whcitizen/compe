@@ -90,7 +90,7 @@ def count_action(save=True):
         
     #save csv file
     if save==True:
-        result_df.to_csv("/Users/moritahitomi/Desktop/SDC2017bsk//output/action_count_per_game.csv", index=None)
+        result_df.to_csv("/Users/moritahitomi/Desktop/SDC2017bsk/output/action_count_per_game.csv", index=None)
         
 
 #game_data.csvからgame_ID=iの情報を取り出す
