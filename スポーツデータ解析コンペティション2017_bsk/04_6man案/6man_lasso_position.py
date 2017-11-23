@@ -13,35 +13,36 @@ import time
 
 if __name__ == "__main__":
     # LASSO に使うデータを作成
-    df = pd.read_csv("input_data.csv")  # pandasでcsvを読込
+    # df = pd.read_csv("input_data.csv")  # pandasでcsvを読込
+    # df = pd.read_csv("input_6man.csv")  # pandasでcsvを読込
+    # df = pd.read_csv("input_6man_time.csv")  # pandasでcsvを読込
+    df = pd.read_csv("input_starting_time.csv")  # pandasでcsvを読込
     df = pd.DataFrame(df)               # DataFrame形式にする
     df = df.loc[df["play_time"] >= df["play_time"].median()]  # プレイタイム上位半分のデータを選択
     # アウトサイドの場合
-    # temp1_df = df.loc[df["position"] == "PG"]  # 該当のポジションのデータを選択
-    # temp2_df = df.loc[df["position"] == "PG/SG"]  # 該当のポジションのデータを選択
-    # temp3_df = df.loc[df["position"] == "G"]  # 該当
-    #
-    #
-    # のポジションのデータを選択
-    # temp4_df = df.loc[df["position"] == "SG"]  # 該当のポジションのデータを選択
-    # temp5_df = df.loc[df["position"] == "G/F"]  # 該当のポジションのデータを選択
-    # temp6_df = df.loc[df["position"] == "SG/SF"]  # 該当のポジションのデータを選択
-    # temp7_df = df.loc[df["position"] == "SF"]  # 該当のポジションのデータを選択
-    # temp8_df = df.loc[df["position"] == "F"]  # 該当のポジションのデータを選択
-    # temp9_df = df.loc[df["position"] == "SF/PF"]  # 該当のポジションのデータを選択
-    # df = pd.concat([temp1_df, temp2_df, temp3_df, temp4_df, temp4_df,
-    #                 temp5_df, temp6_df, temp7_df, temp8_df, temp9_df])
+    temp1_df = df.loc[df["position"] == "PG"]  # 該当のポジションのデータを選択
+    temp2_df = df.loc[df["position"] == "PG/SG"]  # 該当のポジションのデータを選択
+    temp3_df = df.loc[df["position"] == "G"]  # 該当のポジションのデータを選択
+    temp4_df = df.loc[df["position"] == "SG"]  # 該当のポジションのデータを選択
+    temp5_df = df.loc[df["position"] == "G/F"]  # 該当のポジションのデータを選択
+    temp6_df = df.loc[df["position"] == "SG/SF"]  # 該当のポジションのデータを選択
+    temp7_df = df.loc[df["position"] == "SF"]  # 該当のポジションのデータを選択
+    temp8_df = df.loc[df["position"] == "F"]  # 該当のポジションのデータを選択
+    temp9_df = df.loc[df["position"] == "SF/PF"]  # 該当のポジションのデータを選択
+    df = pd.concat([temp1_df, temp2_df, temp3_df, temp4_df, temp4_df,
+                    temp5_df, temp6_df, temp7_df, temp8_df, temp9_df])
     # インサイドの場合
-    temp1_df = df.loc[df["position"] == "PF"]  # 該当のポジションのデータを選択
-    temp2_df = df.loc[df["position"] == "F/C"]  # 該当のポジションのデータを選択
-    temp3_df = df.loc[df["position"] == "PF/C"]  # 該当のポジションのデータを選択
-    temp4_df = df.loc[df["position"] == "C"]  # 該当のポジションのデータを選択
-    temp5_df = df.loc[df["position"] == "F"]  # 該当のポジションのデータを選択
-    temp6_df = df.loc[df["position"] == "SF/PF"]  # 該当のポジションのデータを選択
-    df = pd.concat([temp1_df, temp2_df, temp3_df, temp4_df, temp4_df, temp5_df, temp6_df])
-    data_y = df["probability_6man"]     # DataFrameから，yとして使用する列を抽出
+    # temp1_df = df.loc[df["position"] == "PF"]  # 該当のポジションのデータを選択
+    # temp2_df = df.loc[df["position"] == "F/C"]  # 該当のポジションのデータを選択
+    # temp3_df = df.loc[df["position"] == "PF/C"]  # 該当のポジションのデータを選択
+    # temp4_df = df.loc[df["position"] == "C"]  # 該当のポジションのデータを選択
+    # temp5_df = df.loc[df["position"] == "F"]  # 該当のポジションのデータを選択
+    # temp6_df = df.loc[df["position"] == "SF/PF"]  # 該当のポジションのデータを選択
+    # df = pd.concat([temp1_df, temp2_df, temp3_df, temp4_df, temp4_df, temp5_df, temp6_df])
+
+    data_y = df["probability_starting"]     # DataFrameから，yとして使用する列を抽出
     drop_idx = ["player_id", "frag_starting", "play_time", "frag_6man",
-                "period", "position", "probability_6man"]  # xとして使用しない列を選択
+                "period", "position", "probability_starting"]  # xとして使用しない列を選択
     data_x = df.drop(drop_idx, axis=1)  # DataFrameから，xとして使用する列を抽出
 
     data_y = np.array(data_y, dtype=float)  # numpyのarray形式にすることで演算可能になる
@@ -56,7 +57,7 @@ if __name__ == "__main__":
 
     # alphaとして交差確認法で算出した値を使用
     # lasso = linear_model.Lasso(alpha=lasso_cv.alpha_)
-    lasso = linear_model.Lasso(alpha=0.001)
+    lasso = linear_model.Lasso(alpha=0.016)
     # lasso = linear_model.Lasso(alpha=0)
     lasso.fit(data_x, data_y)
     c = np.array(lasso.coef_)  # cは係数のベクトル
