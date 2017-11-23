@@ -1,4 +1,4 @@
-選手ID,スターティングフラグ,プレイタイム,得点,3P成功,3P試投,2P成功,2P試投,ダンク,フリースロー成功,フリースロー試投,ファウル,被ファウル,オフェンスリバウンド,ディフェンスリバウンド,トータルリバウンド,ターンオーバ,アシスト,スティール,ブロックショット,被ブロックショット,ファストブレイクポイント,ポイントフロムターンオーバー,2Pインサイドポイント,セカンドチャンスポイント,6man,period,position,possibility_starting
+player_id,frag_starting,play_time,points,success_3p,try_3p,success_2p,try_2p,dunk,success_ft,try_ft,faul,faul_receive,rebound_offense,rebound_defense,rebound_total,turn_over,assist,steel,block,block_receive,fast_break_points,points_from_turn_over,2p_inside_points,second_chance_points,frag_6man,period,position,possibility_starting
 8446,120,71985,355,25,87,116,240,0,48,65,78,84,35,65,100,49,123,40,3,9,12,30,86,51,0,186,PG,0.483870968
 8447,117,69288,432,60,187,102,217,0,48,71,74,92,51,75,126,93,137,83,12,14,53,65,160,34,0,194,PG,0.467741935
 8448,147,75513,378,43,126,110,208,1,29,35,99,41,70,113,183,43,40,42,6,14,50,75,184,48,0,195,SF,0.709677419
