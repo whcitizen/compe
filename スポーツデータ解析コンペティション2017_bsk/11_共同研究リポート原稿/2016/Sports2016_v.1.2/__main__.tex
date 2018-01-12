@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%
+%% プリアンサンブル
+\documentclass[10pt,a4j]{jarticle}
+\usepackage{amsmath}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{subfigure}
+\usepackage{here}
+\usepackage[small, bf]{caption}
+
+%maketitleの再設定
+\usepackage[top=15truemm,bottom=15truemm,left=15truemm,right=15truemm]{geometry}
+\makeatletter
+ \renewcommand{\@maketitle}{\newpage
+  %\null%%
+  %\vskip 5.0em
+ \begin{center}
+   {\vspace*{0.1mm} \LARGE \@title \par} \vskip 1.5em 
+   %{\normalsize \lineskip .5em \begin{tabular}[t]{l}\@author \end{tabular}\par}
+   \vskip 1em {\large \@date} 
+   \end{center}%%%
+ \begin{flushright}%%%
+  {\normalsize \lineskip .5em \begin{tabular}[t]{l}\@author \end{tabular}\par}
+  \end{flushright}
+ %\end{center}%%%\end{center}
+ \par
+ \vskip 1.5em}
+ \makeatother
+
+%thebibliographyの再設定
+\makeatletter
+  \renewenvironment{thebibliography}[1]{%
+    \global\let\presectionname\relax
+    \global\let\postsectionname\relax
+    \subsection*{\refname}\@mkboth{\refname}{\refname}%%%%<-section
+    \list{\@biblabel{\@arabic\c@enumiv}}%
+          {\settowidth\labelwidth{\@biblabel{#1}}%
+          \leftmargin\labelwidth
+          \advance\leftmargin\labelsep
+          \setlength\baselineskip{10pt}% 文字サイズ
+          \setlength\itemsep{0zh}% アイテム間のマージン
+          \@openbib@code
+          \usecounter{enumiv}%
+          \let\p@enumiv\@empty
+          \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty\clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}
+    {\def\@noitemerr
+      {\@latex@warning{Empty `thebibliography' environment}}%
+    \endlist}
+\makeatother
+
+%二段組の設定
+\usepackage[]{multicol}
+\setlength{\columnsep}{10truemm}
+
+%章番号の終わりをドットで繋げる
+\usepackage{secdot}
+\sectiondot{subsection}
+%bold vectorの定義
+\newcommand{\bvec}[1]{\mbox{\boldmath $#1$}}
+%ページ番号の消去
+\pagestyle{empty} % すべてのページ番号を消去
+
+
+%%%%%%%%%%%%%%%%%%
+%%　文書設定 
+\title{トピックモデルを用いたサッカーの攻撃パターンの分類による\\類似プレーの抽出}
+\author{神谷 啓太（東京大学大学院 工学系研究科 社会基盤学専攻）\\
+中西 航（東京工業大学 環境・社会理工学院 土木・環境工学系）\\
+泉 裕一朗（東京大学大学院 工学系研究科 社会基盤学専攻）\\
+〒113-8656 東京都文京区本郷7-3-1 TEL:03-5841-6118\\
+E-mail:kamiya@trip.t.u-tokyo.ac.jp\\}
+\date{\empty}
+
+
+%%%%%%%%%%%%%%%%%%%
+%%　原稿開始 
+\begin{document}
+%タイトル表示
+\maketitle
+\thispagestyle{empty} % １ページ目を表示させない
+%2段組本文の開始
+\begin{multicols}{2}
+%はじめに
+\input{hajimeni}
+%Latent Dirichlet Allocation
+\input{lda}
+%入力変数の検討
+\input{inputvariable}
+%適用結果
+\input{experiment}
+%おわりに
+\input{owarini}
+%謝辞
+\subsection*{謝辞}
+本研究で使用したデータはデータスタジアム株式会社様に提供いただきました。
+また、本研究の貸与データは情報・システム研究機構の新領域融合研究プロジェクト『社会コミュニケーション』データ中心科学リサーチコモンズ事業『人間・社会データ』の支援を受けたものです。
+ここに、感謝の意を表します。
+
+%参考文献
+\begin{thebibliography}{9}
+\bibitem{foot}Football LAB（フットボールラボ）とは、Football LAB ～サッカーをデータで楽しむ～、http://www.football-lab.jp/pages/about/、2017年1月31日閲覧
+\bibitem{lda} Blei, David M., Andrew Y. Ng, and Michael I. Jordan. "Latent dirichlet allocation." Journal of machine Learning research 3.Jan (2003): 993-1022.
+\bibitem{topic_blue} 岩田具治：トピックモデル、講談社、2015.
+\bibitem{topic_white} 奥村学：トピックモデルによる統計的潜在未解釈、コロナ者、2015.
+\bibitem{2016nar} 成塚拓真、卯田純平、山崎義弘：サッカーの対戦的特徴に現れる普遍的な統計性の探求、統計数理研究所共同リポート363、スポーツデータ解析における理論と事例に関する研究集会、第3巻、pp. 83-90、2016.
+\bibitem{dtm} Blei, David M., and John D. Lafferty. "Dynamic topic models." Proceedings of the 23rd international conference on Machine learning. ACM, 2006.
+\bibitem{tot} Wang, Xuerui, and Andrew McCallum. "Topics over time: a non-Markov continuous-time model of topical trends." Proceedings of the 12th ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2006.
+
+\end{thebibliography}
+
+
+\newpage
+\end{multicols}
+\end{document}

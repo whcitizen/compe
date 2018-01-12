@@ -1,0 +1,87 @@
+\section{ChangeFinderを用いた戦況変化の抽出手法}
+\label{sec:cf}
+本章ではChangeFinderを用いた戦況変化の抽出手法について説明する。まず、ChangeFinderを適用するにあたり必要となるVARモデル（Vector Autoegressive model；多変量自己回帰モデル）について確認した後、ChangeFinderの基本原理およびVARモデルのオンライン学習方法について説明する。
+
+
+\subsection{VARモデル}
+まず、初期値の平均が$\mu$である$d$次元時系列変数$\{\bvec{x}_t:t=1,2,...\}$を$K$次のVAR過程によってモデル化すると、以下のように定式化される。
+\begin{equation}
+\bvec{x}_{ t }=\sum _{ i=1 }^{ K }{ { w_{ i }(\bvec{x}_{ t-i }-\mu )}+\mu＋\varepsilon  } 
+\label{eq:var}
+\end{equation}
+ここで、$\omega_i\in {\bf{R}}^{d\times d}(i=1,...,K)$は$d$次元パラメータ行列であり、$\varepsilon$は平均0、分散共分散行列$\Sigma$のガウス分布$\mathcal{N}(0,\Sigma)$に従う確率変数である。
+
+すると、上記のVARモデルによって定式化された$\bvec{x}_t$に関する確率密度関数は以下のように表すことができる。
+\begin{equation}
+p(\bvec{x}_{ t }|\theta )=\frac { 1 }{ (2\pi )^{ d/2 }\left| \Sigma  \right|^{1/2}  } \exp(-\frac { 1 }{ 2 } (\bvec{x}_t-\bvec{\omega})^T\Sigma^{-1}(\bvec{x}_t-\bvec{\omega}))
+\end{equation}
+なお、VARモデルのパラメータをまとめて
+\begin{math}
+\theta = \{\omega_1,..., \omega_K, \mu, \Sigma\}
+\end{math}
+と表記し、
+\begin{math}
+\bvec{\omega}=\sum_{i=1}^{K}{\omega_i(\bvec{x}_{t-i}-\mu)}+\mu
+\end{math}
+である。
+また、$T$は転置を表す。
+
+
+
+\subsection{ChangeFinder}
+ChangeFinderでは観測データに対し2段階のVARモデルのオンライン学習を行う。1段階目のVARモデルの学習において観測値に対する外れ値スコアを計算し、その後、平滑化した外れ値スコアを入力とした2段階目のVARモデルを学習することによって、変化点スコアの計算を行う機構となっている。
+
+いま、時刻$t-1$までの観測値$\bvec{x}_1,...,\bvec{x}_{t-1}$が得られているとする。
+すると、後述するSDAR（Sequentially Discounting AR model learning）アルゴリズムと呼ばれるオンライン忘却型学習アルゴリズムを用いることで、時刻$t-1$における確率密度関数$p_{t-1}(\bvec{x})$が推定される。
+ひとたび観測値$\bvec{x}_t$が観測されると、時刻$t$での外れ値スコアが対数損失によって以下のように算出される。
+\begin{equation}
+Score(\bvec{x}_t) = -\log(p_{t-1}(\bvec{x}_t))
+\end{equation}
+
+次に、上記の方法によって算出した外れ値スコアに対して、以下の$T$次移動平均を計算する。
+\begin{equation}
+y_t = \frac{1}{T}\sum_{i=t-T+1}^{t}{Score(\bvec{x}_i)}
+\end{equation}
+
+新たに得られた時系列データ$\{y_t:t=1,2,...\}$をVARモデルで2段階目のモデル化を行い、再びSDARアルゴリズムを用いて学習を行う。$y_{t}$が得られた際に学習された確率密度関数を$q_{t}$とすると、$y_t$の対数損失$-\log(q_{t-1}(y_t))$も1段階目と同様に算出される。
+
+最後に、上記の対数損失に対し$T'$次移動平均を計算した結果を時刻$t$における変化点スコア$Score(t)$とする。
+\begin{equation}
+Score(t) = \frac{1}{T'}\sum_{i=t-T'+1}^{t}{\{-\log(q_{i-1}(y_i))\}}
+\end{equation}
+この変化点スコア$Score(t)$が大きいほど時刻$t$における状態変化の度合いが大きいことを意味する。
+
+\subsection{SDARアルゴリズム}
+SDARアルゴリズムでは、観測値$\bvec{x}_t$が観測される度にVARモデルのパラメータである
+\begin{math}
+\theta = \{\omega_1,..., \omega_K, \mu, \Sigma\}
+\end{math}
+を学習する。
+この際、忘却効果を取り入れることによって過去の観測で得られた情報を徐々に低減していく。
+これにより、もともと定常過程のみを取り扱うことができるVARモデルが、非定常なモデルの学習も形式的と可能となっている。
+
+まず、各種パラメータおよび統計量の初期値$\hat{\mu},\hat{\Sigma},C_i(i=1,...,K)$を定める。
+ここで、$\{C_i:i=1,...,K\}$は自己共分散関数である。
+
+$\bvec{x}_t$を観測する度に、以下の更新式を計算する。
+\begin{eqnarray}
+\label{eq:str}
+\hat{\mu}&\leftarrow& (1-r)\hat{\mu}+r\bvec{x}_t\\
+C_j&\leftarrow& (1-r)C_j+r(\bvec{x}_t-\hat{\mu})(\bvec{x}_{t-j}-\hat{\mu})^T
+\end{eqnarray}
+
+上式における$r(0<r<1)$が忘却パラメータであり、新たなデータから計算された統計量と過去のデータから計算されている統計量の更新比を制御する。$r$が大きいほど忘却の度合いが大きいこととなる。
+
+次に、以下の自己共分散関数とパラメータ行列に関するYuleWalker方程式を解く\cite{kit}。
+\begin{equation}
+\sum_{i=1}^{K}{\omega_i}C_{j-i}=C_j\qquad(j=1,...,K)
+\end{equation}
+
+最後に、上記の解を$\hat{\omega}_1,...,\hat{\omega}_K$とおき、以下を計算する。
+\begin{eqnarray}
+\hat{\bvec{x}}_t&\leftarrow&\sum_{i=1}^{K}{\hat{\omega}_i(\bvec{x}_{t-i}-\hat{\mu})+\hat{\mu}}\\
+\hat{\Sigma}&\leftarrow&(1-r)\hat{\Sigma}+r(\bvec{x}_t-\hat{\bvec{x}}_t)(\bvec{x}_t-\hat{\bvec{x}}_t)^T
+\label{eq:end}
+\end{eqnarray}
+観測値$\bvec{x}_t$が観測される度に、式(\ref{eq:str})～(\ref{eq:end})を繰り返す。
+

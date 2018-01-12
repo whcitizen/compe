@@ -1,0 +1,116 @@
+%%%%%%%%%%%%%%%%%%%
+%% プリアンサンブル
+\documentclass[10pt,a4j]{jarticle}
+\usepackage{amsmath}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{subfigure}
+\usepackage{here}
+\usepackage[small, bf]{caption}
+
+%maketitleの再設定
+\usepackage[top=15truemm,bottom=16.5truemm,left=15truemm,right=15truemm]{geometry}
+\makeatletter
+ \renewcommand{\@maketitle}{\newpage
+  %\null%%
+  %\vskip 5.0em
+ \begin{center}
+   {\vspace*{0.1mm} \LARGE \@title \par} \vskip 1.5em 
+   %{\normalsize \lineskip .5em \begin{tabular}[t]{l}\@author \end{tabular}\par}
+   \vskip 1em {\large \@date} 
+   \end{center}%%%
+ \begin{flushright}%%%
+  {\normalsize \lineskip .5em \begin{tabular}[t]{l}\@author \end{tabular}\par}
+  \end{flushright}
+ %\end{center}%%%\end{center}
+ \par
+ \vskip 1.5em}
+ \makeatother
+
+%thebibliographyの再設定
+\makeatletter
+  \renewenvironment{thebibliography}[1]{%
+    \global\let\presectionname\relax
+    \global\let\postsectionname\relax
+    \subsection*{\refname}\@mkboth{\refname}{\refname}%%%%<-section
+    \list{\@biblabel{\@arabic\c@enumiv}}%
+          {\settowidth\labelwidth{\@biblabel{#1}}%
+          \leftmargin\labelwidth
+          \advance\leftmargin\labelsep
+          \setlength\baselineskip{10pt}% 文字サイズ
+          \setlength\itemsep{0zh}% アイテム間のマージン
+          \@openbib@code
+          \usecounter{enumiv}%
+          \let\p@enumiv\@empty
+          \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+    \sloppy
+    \clubpenalty4000
+    \@clubpenalty\clubpenalty
+    \widowpenalty4000%
+    \sfcode`\.\@m}
+    {\def\@noitemerr
+      {\@latex@warning{Empty `thebibliography' environment}}%
+    \endlist}
+\makeatother
+
+%二段組の設定
+\usepackage[]{multicol}
+\setlength{\columnsep}{10truemm}
+
+%章番号の終わりをドットで繋げる
+\usepackage{secdot}
+\sectiondot{subsection}
+%bold vectorの定義
+\newcommand{\bvec}[1]{\mbox{\boldmath $#1$}}
+%ページ番号の消去
+\pagestyle{empty} % すべてのページ番号を消去
+
+
+%%%%%%%%%%%%%%%%%%
+%%　文書設定 
+\title{トラッキングデータを用いたサッカーの試合における戦況変化の抽出}
+\author{神谷 啓太（東京大学大学院工学系研究科）\\
+中西 航（東京大学大学院工学系研究科・助教）\\
+泉 裕一朗（東京大学大学院工学系研究科）\\
+〒113-8656 東京都文京区本郷7-3-1\\
+TEL:03-5841-6118, FAX:03-5841-7453\\
+E-MAIL:kamiya@trip.t.u-tokyo.ac.jp\\}
+\date{\empty}
+
+
+%%%%%%%%%%%%%%%%%%%
+%%　原稿開始 
+\begin{document}
+%タイトル表示
+\maketitle
+\thispagestyle{empty} % １ページ目を表示させない
+%2段組本文の開始
+\begin{multicols}{2}
+%はじめに
+\input{hajimeni}
+%Change Finder
+\input{changefinder}
+%入力変数の検討
+\input{inputvariable}
+%適用結果
+\input{experiment}
+%おわりに
+\input{owarini}
+%謝辞
+\subsection*{謝辞}
+本研究で使用したデータはデータスタジアム株式会社から提供を受けたものである。
+また、本研究の貸与データは情報・システム研究機構の新領域融合研究プロジェクト『社会コミュニケーション』データ中心科学リサーチコモンズ事業『人間・社会データ』の支援を受けている。
+なお、本分析を進める中で、矢野槙一氏（東京大学）にサッカーにおける専門的知見を提供いただいた。
+ここに、感謝の意を表する。
+
+%参考文献
+\begin{thebibliography}{9}
+\bibitem{kij} A. Kijima, K. Yokoyama, H. Shima and Y. Yamamoto, “Emergence of self-similarity in football dynamics,” The European Physical Journal B, vol. 87, no. 2, pp. 1-6, 2014 .
+\bibitem{yam_dm} 山西健司「データマイニングによる異常検知」共立出版、2009.
+\bibitem{yam_cf} Takeuchi, J., and Yamanishi, K., “A Unifying Framework for Detecting Outliers and Change Points  from Time Series,”IEEE Trans. on Knowledge and Data Engineering, 18(4), pp.482-492, 2006.
+\bibitem{kit} 北川源四郎「時系列解析入門」岩波書店、2005．
+\end{thebibliography}
+
+
+\newpage
+\end{multicols}
+\end{document}
